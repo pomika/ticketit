@@ -2,26 +2,22 @@
 
 @section('page')
     {{ trans('ticketit::lang.index-title') }}
-    
+@stop
+
+@section('content')
+    <link href="http://admin.voxels.io/css/right.dark.css" rel="stylesheet">
+    <link href="http://admin.voxels.io/css/right.dark.custom.css" rel="stylesheet">
+    @include('ticketit::shared.header')
+    @include('ticketit::tickets.index')
+@stop
+
+@section('footer')
     <script>
         window.Laravel = {!! json_encode([
             'csrfToken' => csrf_token(),
         ]) !!};
         document.domain = "voxels.io";
     </script>
-@stop
-
-@section('css')
-    <link href="{{ asset('http://admin.voxels.io/css/right.dark.css') }}" rel="stylesheet">
-    <link href="{{ asset('http://admin.voxels.io/css/right.dark.custom.css') }}" rel="stylesheet">
-@stop
-
-@section('content')
-    @include('ticketit::shared.header')
-    @include('ticketit::tickets.index')
-@stop
-
-@section('footer')
 	<script src="//cdn.datatables.net/1.10.9/js/jquery.dataTables.min.js"></script>
 	<script src="//cdn.datatables.net/plug-ins/505bef35b56/integration/bootstrap/3/dataTables.bootstrap.js"></script>
 	<script src="//cdn.datatables.net/responsive/1.0.7/js/dataTables.responsive.min.js"></script>
