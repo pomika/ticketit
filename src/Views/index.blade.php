@@ -2,6 +2,18 @@
 
 @section('page')
     {{ trans('ticketit::lang.index-title') }}
+    
+    <script>
+        window.Laravel = {!! json_encode([
+            'csrfToken' => csrf_token(),
+        ]) !!};
+        document.domain = "voxels.io";
+    </script>
+@stop
+
+@section('css')
+    <link href="{{ asset('http://admin.voxels.io/css/right.dark.css') }}" rel="stylesheet">
+    <link href="{{ asset('http://admin.voxels.io/css/right.dark.custom.css') }}" rel="stylesheet">
 @stop
 
 @section('content')

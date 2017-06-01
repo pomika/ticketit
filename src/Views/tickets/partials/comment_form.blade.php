@@ -13,8 +13,9 @@
                     </div>
                 </div>
 
-                <div class="text-right col-md-12">
-                    {!! CollectiveForm::submit( trans('ticketit::lang.btn-submit'), ['class' => 'btn btn-primary']) !!}
+                <div class="row div-separator"></div>
+                <div class="text-left col-md-12">
+                    {!! CollectiveForm::submit( trans('ticketit::lang.btn-submit'), ['class' => 'btn btn-primary col-lg-2']) !!}
                 </div>
 
             </fieldset>
