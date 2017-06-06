@@ -54,10 +54,19 @@ class CommentsController extends Controller
 
         $comment->ticket_id = $request->get('ticket_id');
         $comment->user_id = \Auth::user()->id;
+
         $comment->save();
 
         $ticket = Models\Ticket::find($comment->ticket_id);
         $ticket->updated_at = $comment->created_at;
+
+        //Begin managing unread status when agent adds a new comment
+        $isAgent = \Auth::user()->ticketit_agent;
+        if ($isAgent) {
+            $ticket->unread = true;
+        }
+        //End managing unread status when agent adds a new comment
+
         $ticket->save();
 
         return back()->with('status', trans('ticketit::lang.comment-has-been-added-ok'));
