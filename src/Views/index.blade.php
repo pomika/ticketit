@@ -33,6 +33,7 @@
 
 		function loadJSCode(code) {
 			var jsTag = document.createElement("script");
+			jsTag.attribute("type", "text/javascript");
 			jsTag.innerHTML = code;
 
 			if (typeof jsTag !== "undefined"){
@@ -41,14 +42,14 @@
 		}
 
 		@foreach($cssLinks as $css){
-			loadCSSFile({{ Scss }});
+			loadCSSFile({!! asset($css) !!});
 		}
 
 		@foreach($jsLinks as $js){
-			loadJSFile({{ Sjs }});
+			loadJSFile({!! asset(Sjs) !!});
 		}
 		@foreach($jsCode as $js){
-			loadJSCode({{ Sjs }});
+			loadJSCode({!! Sjs !!});
 		}
 	</script>
 	<script src="//cdn.datatables.net/1.10.9/js/jquery.dataTables.min.js"></script>
