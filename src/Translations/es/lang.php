@@ -18,6 +18,7 @@ return [
   'table-priority'                   => 'Prioridad',
   'table-agent'                      => 'Agente',
   'table-category'                   => 'Categoría',
+  'table-unread'                     => 'Respuesta No Leída',
 
   // Datatables
   'table-decimal'                    => '',
