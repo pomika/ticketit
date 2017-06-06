@@ -29,24 +29,33 @@ class TicketsController extends Controller
         $this->agent = $agent;
     }
 
-    public function data(Datatables $datatables, $complete = false)
+    public function data(Datatables $datatables, $complete = false, $unread = false)
     {
         $user = $this->agent->find(auth()->user()->id);
 
         if ($user->isAdmin()) {
-            if ($complete) {
+            if($unread){
+                $collection = Ticket::unread();
+            }
+            else if ($complete) {
                 $collection = Ticket::complete();
             } else {
                 $collection = Ticket::active();
             }
         } elseif ($user->isAgent()) {
-            if ($complete) {
+            if($unread){
+                $collection = Ticket::unread()->agentUserTickets($user->id);
+            }
+            else if ($complete) {
                 $collection = Ticket::complete()->agentUserTickets($user->id);
             } else {
                 $collection = Ticket::active()->agentUserTickets($user->id);
             }
         } else {
-            if ($complete) {
+            if($unread){
+                $collection = Ticket::userTickets($user->id)->unread();
+            }
+            else if ($complete) {
                 $collection = Ticket::userTickets($user->id)->complete();
             } else {
                 $collection = Ticket::userTickets($user->id)->active();
@@ -71,6 +80,7 @@ class TicketsController extends Controller
                 'users.name AS owner',
                 'ticketit.agent_id',
                 'ticketit_categories.name AS category',
+                'ticketit.unread AS unread', //Select the field unread in the database table ticketit
             ]);
 
         $collection = $datatables->of($collection);
@@ -82,7 +92,7 @@ class TicketsController extends Controller
         // method rawColumns was introduced in laravel-datatables 7, which is only compatible with >L5.4
         // in previous laravel-datatables versions escaping columns wasn't defaut
         if (LaravelVersion::min('5.4')) {
-            $collection->rawColumns(['subject', 'status', 'priority', 'category', 'agent']);
+            $collection->rawColumns(['subject', 'status', 'priority', 'category', 'agent', 'unread']);
         }
 
         return $collection->make(true);
@@ -125,6 +135,15 @@ class TicketsController extends Controller
             return e($ticket->agent->name);
         });
 
+        $collection->editColumn('unread', function ($ticket) {
+            if($ticket->unread == true){
+                return e("Yes");
+            }
+            else {
+                return e("No");
+            }
+        });
+
         return $collection;
     }
 
@@ -150,6 +169,18 @@ class TicketsController extends Controller
         $complete = true;
 
         return view('ticketit::index', compact('complete'));
+    }
+
+    /**
+     * Display a listing of unread tickets related to user.
+     *
+     * @return Response
+     */
+    public function indexUnread()
+    {
+        $unread = true;
+
+        return view('ticketit::index', compact('unread'));
     }
 
     /**
@@ -239,6 +270,13 @@ class TicketsController extends Controller
 
         $comments = $ticket->comments()->paginate(Setting::grab('paginate_items'));
 
+        //Begin managing unread status when user view a comment
+        $isAgent = \Auth::user()->ticketit_agent;
+        if (!$isAgent) {
+            $ticket->unread = false;
+        }
+        //End managing unread status when user view a comment
+
         return view('ticketit::tickets.show',
             compact('ticket', 'status_lists', 'priority_lists', 'category_lists', 'agent_lists', 'comments',
                 'close_perm', 'reopen_perm'));
@@ -278,6 +316,14 @@ class TicketsController extends Controller
         } else {
             $ticket->agent_id = $request->input('agent_id');
         }
+
+        //Begin managing unread status when agent adds a new comment
+        $user = $this->agent->find(auth()->user()->id);
+
+        if ($user->isAgent()) {
+            $ticket->unread = true;
+        }
+        //End managing unread status when agent adds a new comment
 
         $ticket->save();
 
