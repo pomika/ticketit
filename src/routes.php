@@ -4,8 +4,13 @@ Route::group(['middleware' => \Kordy\Ticketit\Helpers\LaravelVersion::authMiddle
 
     //Route::group(['middleware' => '', function () use ($main_route) {
         //Ticket public route
-        Route::get("$main_route_path/complete", 'Kordy\Ticketit\Controllers\TicketsController@indexComplete')
+    Route::get("$main_route_path/complete", 'Kordy\Ticketit\Controllers\TicketsController@indexComplete')
             ->name("$main_route-complete");
+
+    //Route to get all unread tickets from API
+    Route::get("$main_route_path/unread", 'Kordy\Ticketit\Controllers\TicketsController@indexUnread')
+        ->name("$main_route-unread");
+
     Route::get("$main_route_path/data/{id?}", 'Kordy\Ticketit\Controllers\TicketsController@data')
             ->name("$main_route.data");
 
