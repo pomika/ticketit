@@ -51,6 +51,16 @@ class Ticket extends Model
     }
 
     /**
+     * List of unread tickets.
+     *
+     * @return Collection
+     */
+    public function scopeUnread($query)
+    {
+        return $query->where('unread', '=', 'true');
+    }
+
+    /**
      * Get Ticket status.
      *
      * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
