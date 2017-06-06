@@ -1,30 +1,51 @@
 @extends($master)
 
 @section('page')
-    {{ trans('ticketit::lang.index-title') }}
+	{{ trans('ticketit::lang.index-title') }}
 @stop
 
 @section('content')
-    <link href="http://admin.voxels.io/css/right.dark.css" rel="stylesheet">
-    <link href="http://admin.voxels.io/css/right.dark.custom.css" rel="stylesheet">
-    @include('ticketit::shared.header')
-    @include('ticketit::tickets.index')
+	@include('ticketit::shared.header')
+	@include('ticketit::tickets.index')
 @stop
 
 @section('footer')
-    <script>document.domain = "voxels.io";</script>
+	<script>
+		function loadCSS(filename) {
+			var file = document.createElement("link");
+			file.setAttribute("rel", "stylesheet");
+			file.setAttribute("type", "text/css");
+			file.setAttribute("href", filename);
+
+			if (typeof file !== "undefined"){
+				document.getElementsByTagName("head")[0].appendChild(file)
+			}
+		}
+		function loadJS(filename) {
+			var jsFile = document.createElement("script");
+			jsFile.setAttribute("src", filename);
+
+			if (typeof jsFile !== "undefined"){
+				document.getElementsByTagName("footer")[0].appendChild(jsFile);
+			}
+		}
+		@foreach($js_code as $js){
+			loadJS({{ Sjs }});
+		}
+	</script>
+
 	<script src="//cdn.datatables.net/1.10.9/js/jquery.dataTables.min.js"></script>
 	<script src="//cdn.datatables.net/plug-ins/505bef35b56/integration/bootstrap/3/dataTables.bootstrap.js"></script>
 	<script src="//cdn.datatables.net/responsive/1.0.7/js/dataTables.responsive.min.js"></script>
 	<script>
-	    $('.table').DataTable({
-	        processing: false,
-	        serverSide: true,
-	        responsive: true,
-            pageLength: {{ $setting->grab('paginate_items') }},
-        	lengthMenu: {{ json_encode($setting->grab('length_menu')) }},
-	        ajax: '{!! route($setting->grab('main_route').'.data', $complete) !!}',
-	        language: {
+		$('.table').DataTable({
+			processing: false,
+			serverSide: true,
+			responsive: true,
+			pageLength: {{ $setting->grab('paginate_items') }},
+			lengthMenu: {{ json_encode($setting->grab('length_menu')) }},
+			ajax: '{!! route($setting->grab('main_route').'.data', [$complete, $unread]) !!}',
+			language: {
 				decimal:        "{{ trans('ticketit::lang.table-decimal') }}",
 				emptyTable:     "{{ trans('ticketit::lang.table-empty') }}",
 				info:           "{{ trans('ticketit::lang.table-info') }}",
@@ -48,18 +69,19 @@
 					sortDescending: "{{ trans('ticketit::lang.table-aria-sort-desc') }}"
 				},
 			},
-	        columns: [
-	            { data: 'id', name: 'ticketit.id' },
-	            { data: 'subject', name: 'subject' },
-	            { data: 'status', name: 'ticketit_statuses.name' },
-	            { data: 'updated_at', name: 'ticketit.updated_at' },
-            	{ data: 'agent', name: 'users.name' },
-	            @if( $u->isAgent() || $u->isAdmin() )
-		            { data: 'priority', name: 'ticketit_priorities.name' },
-	            	{ data: 'owner', name: 'users.name' },
-		            { data: 'category', name: 'ticketit_categories.name' }
-	            @endif
-	        ]
-	    });
+			columns: [
+				{ data: 'id', name: 'ticketit.id' },
+				{ data: 'subject', name: 'subject' },
+				{ data: 'status', name: 'ticketit_statuses.name' },
+				{ data: 'updated_at', name: 'ticketit.updated_at' },
+				{ data: 'agent', name: 'users.name' },
+				{ data: 'unread', name: 'ticketit.unread'}
+				@if( $u->isAgent() || $u->isAdmin() )
+				{ data: 'priority', name: 'ticketit_priorities.name' },
+				{ data: 'owner', name: 'users.name' },
+				{ data: 'category', name: 'ticketit_categories.name' }
+				@endif
+            ]
+		});
 	</script>
 @append
