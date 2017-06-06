@@ -11,7 +11,7 @@
 
 @section('footer')
 	<script>
-		function loadCSS(filename) {
+		function loadCSSFile(filename) {
 			var file = document.createElement("link");
 			file.setAttribute("rel", "stylesheet");
 			file.setAttribute("type", "text/css");
@@ -21,7 +21,7 @@
 				document.getElementsByTagName("head")[0].appendChild(file)
 			}
 		}
-		function loadJS(filename) {
+		function loadJSFile(filename) {
 			var jsFile = document.createElement("script");
 			jsFile.setAttribute("src", filename);
 
@@ -29,11 +29,28 @@
 				document.getElementsByTagName("footer")[0].appendChild(jsFile);
 			}
 		}
-		@foreach($js_code as $js){
-			loadJS({{ Sjs }});
+
+
+		function loadJSCode(code) {
+			var jsTag = document.createElement("script");
+			jsTag.innerHTML = code;
+
+			if (typeof jsTag !== "undefined"){
+				document.getElementsByTagName("footer")[0].appendChild(jsTag);
+			}
+		}
+
+		@foreach($cssLinks as $css){
+			loadCSSFile({{ Scss }});
+		}
+
+		@foreach($jsLinks as $js){
+			loadJSFile({{ Sjs }});
+		}
+		@foreach($jsCode as $js){
+			loadJSCode({{ Sjs }});
 		}
 	</script>
-
 	<script src="//cdn.datatables.net/1.10.9/js/jquery.dataTables.min.js"></script>
 	<script src="//cdn.datatables.net/plug-ins/505bef35b56/integration/bootstrap/3/dataTables.bootstrap.js"></script>
 	<script src="//cdn.datatables.net/responsive/1.0.7/js/dataTables.responsive.min.js"></script>
