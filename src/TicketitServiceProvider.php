@@ -4,7 +4,6 @@ namespace Kordy\Ticketit;
 
 use Collective\Html\FormFacade as CollectiveForm;
 use Illuminate\Support\Facades\DB;
-use \Voxels\Voxels;
 use Illuminate\Support\Facades\Request;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\Schema;
@@ -63,11 +62,6 @@ class TicketitServiceProvider extends ServiceProvider
                 $view->with(compact('master', 'email', 'tools', 'editor_enabled', 'codemirror_enabled', 'codemirror_theme'));
             });
 
-            //inject css to master template
-            $template = "index.blade.php";
-            $voxelsInjector = new Voxels($template);
-            $voxelsInjector->injectTemplateCssLinks();
-            $voxelsInjector->injectTemplateScript();
             //inlude font awesome css or not
             view()->composer('ticketit::shared.assets', function ($view) {
                 $include_font_awesome = Setting::grab('include_font_awesome');
@@ -196,10 +190,10 @@ class TicketitServiceProvider extends ServiceProvider
             $admin_route_path = Setting::grab('admin_route_path');
             include Setting::grab('routes');
         } elseif (Request::path() == 'tickets-install'
-            || Request::path() == 'tickets-upgrade'
-            || Request::path() == 'tickets'
-            || Request::path() == 'tickets-admin'
-            || (isset($_SERVER['ARTISAN_TICKETIT_INSTALLING']) && $_SERVER['ARTISAN_TICKETIT_INSTALLING'])) {
+                || Request::path() == 'tickets-upgrade'
+                || Request::path() == 'tickets'
+                || Request::path() == 'tickets-admin'
+                || (isset($_SERVER['ARTISAN_TICKETIT_INSTALLING']) && $_SERVER['ARTISAN_TICKETIT_INSTALLING'])) {
             $this->loadTranslationsFrom(__DIR__.'/Translations', 'ticketit');
             $this->loadViewsFrom(__DIR__.'/Views', 'ticketit');
             $this->publishes([__DIR__.'/Migrations' => base_path('database/migrations')], 'db');
@@ -244,7 +238,6 @@ class TicketitServiceProvider extends ServiceProvider
         $this->app->register(\Yajra\Datatables\DatatablesServiceProvider::class);
         $this->app->register(\Jenssegers\Date\DateServiceProvider::class);
         $this->app->register(\Mews\Purifier\PurifierServiceProvider::class);
-        $this->app->register(\Voxels\Voxels\VoxelsServiceProvider::class);
         /*
          * Create aliases for the dependency.
          */
