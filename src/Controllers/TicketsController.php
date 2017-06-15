@@ -4,6 +4,7 @@ namespace Kordy\Ticketit\Controllers;
 
 use App\Http\Controllers\Controller;
 use Carbon\Carbon;
+use Doctrine\DBAL\Exception\ConnectionException;
 use Illuminate\Http\Request;
 use Kordy\Ticketit\Helpers\LaravelVersion;
 use Kordy\Ticketit\Models;
@@ -11,6 +12,8 @@ use Kordy\Ticketit\Models\Agent;
 use Kordy\Ticketit\Models\Category;
 use Kordy\Ticketit\Models\Setting;
 use Kordy\Ticketit\Models\Ticket;
+use Psy\Exception\ErrorException;
+use Symfony\Component\HttpKernel\Tests\Exception\NotFoundHttpExceptionTest;
 use Yajra\Datatables\Datatables;
 use Yajra\Datatables\Engines\EloquentEngine;
 
@@ -32,7 +35,6 @@ class TicketsController extends Controller
     public function data(Datatables $datatables, $complete = false, $unread = false)
     {
         $user = $this->agent->find(auth()->user()->id);
-
         if ($user->isAdmin()) {
             if($unread){
                 $collection = Ticket::unread();
@@ -42,7 +44,13 @@ class TicketsController extends Controller
             } else {
                 $collection = Ticket::active();
             }
+<<<<<<< Updated upstream
         } elseif ($user->isAgent()) {
+=======
+        }
+        elseif ($user->isAgent()) {
+
+>>>>>>> Stashed changes
             if($unread){
                 $collection = Ticket::unread()->agentUserTickets($user->id);
             }
@@ -51,7 +59,13 @@ class TicketsController extends Controller
             } else {
                 $collection = Ticket::active()->agentUserTickets($user->id);
             }
+<<<<<<< Updated upstream
         } else {
+=======
+        }
+        else {
+
+>>>>>>> Stashed changes
             if($unread){
                 $collection = Ticket::userTickets($user->id)->unread();
             }
@@ -80,21 +94,22 @@ class TicketsController extends Controller
                 'users.name AS owner',
                 'ticketit.agent_id',
                 'ticketit_categories.name AS category',
+<<<<<<< Updated upstream
                 'ticketit.unread AS unread', //Select the field unread in the database table ticketit
+=======
+                'ticketit.unread AS unread' //Select the field unread in the database table ticketit
+>>>>>>> Stashed changes
             ]);
-
         $collection = $datatables->of($collection);
 
         $this->renderTicketTable($collection);
 
         $collection->editColumn('updated_at', '{!! \Carbon\Carbon::createFromFormat("Y-m-d H:i:s", $updated_at)->diffForHumans() !!}');
-
         // method rawColumns was introduced in laravel-datatables 7, which is only compatible with >L5.4
         // in previous laravel-datatables versions escaping columns wasn't defaut
         if (LaravelVersion::min('5.4')) {
             $collection->rawColumns(['subject', 'status', 'priority', 'category', 'agent', 'unread']);
         }
-
         return $collection->make(true);
     }
 
@@ -136,11 +151,19 @@ class TicketsController extends Controller
         });
 
         $collection->editColumn('unread', function ($ticket) {
+<<<<<<< Updated upstream
             if($ticket->unread == true){
                 return e("Yes");
             }
             else {
                 return e("No");
+=======
+            if(!$ticket->unread){
+                return e("NO");
+            }
+            else {
+                return e("YES");
+>>>>>>> Stashed changes
             }
         });
 
@@ -155,8 +178,8 @@ class TicketsController extends Controller
     public function index()
     {
         $complete = false;
-
-        return view('ticketit::index', compact('complete'));
+        $unread = true;
+        return view('ticketit::index', compact('complete', 'unread'));
     }
 
     /**
@@ -167,8 +190,22 @@ class TicketsController extends Controller
     public function indexComplete()
     {
         $complete = true;
+        $unread = false;
 
-        return view('ticketit::index', compact('complete'));
+        return view('ticketit::index', compact('complete', 'unread'));
+    }
+
+    /**
+     * Display a listing of unread tickets related to user.
+     *
+     * @return Response
+     */
+    public function indexUnread()
+    {
+        $unread = true;
+        $complete = false;
+
+        return view('ticketit::index', compact('complete','unread'));
     }
 
     /**
@@ -275,6 +312,10 @@ class TicketsController extends Controller
         if (!$isAgent) {
             $ticket->unread = false;
         }
+<<<<<<< Updated upstream
+=======
+        $ticket->save();
+>>>>>>> Stashed changes
         //End managing unread status when user view a comment
 
         return view('ticketit::tickets.show',

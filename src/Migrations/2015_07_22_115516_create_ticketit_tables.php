@@ -63,6 +63,11 @@ class CreateTicketitTables extends Migration
             $table->integer('ticket_id')->unsigned();
             $table->timestamps();
         });
+
+        //Modifying ticketit table, adding new boolean field 'unread' default false
+        Schema::table('ticketit', function(Blueprint $table){
+            $table->boolean('unread')->default(1);
+        });
     }
 
     /**
