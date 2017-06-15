@@ -44,13 +44,9 @@ class TicketsController extends Controller
             } else {
                 $collection = Ticket::active();
             }
-<<<<<<< Updated upstream
-        } elseif ($user->isAgent()) {
-=======
         }
         elseif ($user->isAgent()) {
 
->>>>>>> Stashed changes
             if($unread){
                 $collection = Ticket::unread()->agentUserTickets($user->id);
             }
@@ -59,13 +55,9 @@ class TicketsController extends Controller
             } else {
                 $collection = Ticket::active()->agentUserTickets($user->id);
             }
-<<<<<<< Updated upstream
-        } else {
-=======
         }
         else {
 
->>>>>>> Stashed changes
             if($unread){
                 $collection = Ticket::userTickets($user->id)->unread();
             }
@@ -94,11 +86,7 @@ class TicketsController extends Controller
                 'users.name AS owner',
                 'ticketit.agent_id',
                 'ticketit_categories.name AS category',
-<<<<<<< Updated upstream
-                'ticketit.unread AS unread', //Select the field unread in the database table ticketit
-=======
                 'ticketit.unread AS unread' //Select the field unread in the database table ticketit
->>>>>>> Stashed changes
             ]);
         $collection = $datatables->of($collection);
 
@@ -151,19 +139,11 @@ class TicketsController extends Controller
         });
 
         $collection->editColumn('unread', function ($ticket) {
-<<<<<<< Updated upstream
-            if($ticket->unread == true){
-                return e("Yes");
-            }
-            else {
-                return e("No");
-=======
             if(!$ticket->unread){
                 return e("NO");
             }
             else {
                 return e("YES");
->>>>>>> Stashed changes
             }
         });
 
@@ -206,18 +186,6 @@ class TicketsController extends Controller
         $complete = false;
 
         return view('ticketit::index', compact('complete','unread'));
-    }
-
-    /**
-     * Display a listing of unread tickets related to user.
-     *
-     * @return Response
-     */
-    public function indexUnread()
-    {
-        $unread = true;
-
-        return view('ticketit::index', compact('unread'));
     }
 
     /**
@@ -312,10 +280,7 @@ class TicketsController extends Controller
         if (!$isAgent) {
             $ticket->unread = false;
         }
-<<<<<<< Updated upstream
-=======
         $ticket->save();
->>>>>>> Stashed changes
         //End managing unread status when user view a comment
 
         return view('ticketit::tickets.show',
