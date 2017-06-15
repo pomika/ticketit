@@ -16,7 +16,6 @@ use Kordy\Ticketit\Models\Agent;
 use Kordy\Ticketit\Models\Comment;
 use Kordy\Ticketit\Models\Setting;
 use Kordy\Ticketit\Models\Ticket;
-use \Voxels\Voxels;
 
 class TicketitServiceProvider extends ServiceProvider
 {
@@ -62,10 +61,6 @@ class TicketitServiceProvider extends ServiceProvider
                 $codemirror_theme = Setting::grab('codemirror_theme');
                 $view->with(compact('master', 'email', 'tools', 'editor_enabled', 'codemirror_enabled', 'codemirror_theme'));
             });
-            $template = "index";
-            $voxelsInjector = new Voxels($template);
-            $voxelsInjector->injectCSSFile();
-            $voxelsInjector->injectJSCode();
 
             //inlude font awesome css or not
             view()->composer('ticketit::shared.assets', function ($view) {
