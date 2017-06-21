@@ -5,6 +5,7 @@ namespace Kordy\Ticketit\Controllers;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use Kordy\Ticketit\Models;
+use Psy\Exception\ErrorException;
 
 class CommentsController extends Controller
 {
@@ -43,27 +44,32 @@ class CommentsController extends Controller
      */
     public function store(Request $request)
     {
+//
         $this->validate($request, [
             'ticket_id'   => 'required|exists:ticketit,id',
             'content'     => 'required|min:6',
         ]);
 
+
         $comment = new Models\Comment();
 
         $comment->setPurifiedContent($request->get('content'));
+
 
         $comment->ticket_id = $request->get('ticket_id');
         $comment->user_id = \Auth::user()->id;
 
         $comment->save();
-
         $ticket = Models\Ticket::find($comment->ticket_id);
         $ticket->updated_at = $comment->created_at;
 
         //Begin managing unread status when agent adds a new comment
         $isAgent = \Auth::user()->ticketit_agent;
         if ($isAgent) {
-            $ticket->unread = true;
+            $ticket->unread_user = true;
+        }
+        else{
+            $ticket->unread_agent = true;
         }
         //End managing unread status when agent adds a new comment
 

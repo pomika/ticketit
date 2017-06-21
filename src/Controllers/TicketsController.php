@@ -5,6 +5,7 @@ namespace Kordy\Ticketit\Controllers;
 use App\Http\Controllers\Controller;
 use Carbon\Carbon;
 use Doctrine\DBAL\Exception\ConnectionException;
+use Doctrine\DBAL\Exception\TableExistsException;
 use Illuminate\Http\Request;
 use Kordy\Ticketit\Helpers\LaravelVersion;
 use Kordy\Ticketit\Models;
@@ -48,7 +49,7 @@ class TicketsController extends Controller
         elseif ($user->isAgent()) {
 
             if($unread){
-                $collection = Ticket::unread()->agentUserTickets($user->id);
+                $collection = Ticket::unreadAgent()->agentUserTickets($user->id);
             }
             else if ($complete) {
                 $collection = Ticket::complete()->agentUserTickets($user->id);
@@ -59,7 +60,7 @@ class TicketsController extends Controller
         else {
 
             if($unread){
-                $collection = Ticket::userTickets($user->id)->unread();
+                $collection = Ticket::userTickets($user->id)->unreadUser();
             }
             else if ($complete) {
                 $collection = Ticket::userTickets($user->id)->complete();
@@ -86,7 +87,8 @@ class TicketsController extends Controller
                 'users.name AS owner',
                 'ticketit.agent_id',
                 'ticketit_categories.name AS category',
-                'ticketit.unread AS unread' //Select the field unread in the database table ticketit
+                'ticketit.unread_user AS unread_user',//Select the field unread_user in the database table ticketit
+                'ticketit.unread_agent AS unread_agent'//Select the field unread_agent in the database table ticketit
             ]);
         $collection = $datatables->of($collection);
 
@@ -139,11 +141,20 @@ class TicketsController extends Controller
         });
 
         $collection->editColumn('unread', function ($ticket) {
-            if(!$ticket->unread){
-                return e("NO");
+            $user = $this->agent->find(auth()->user()->id);
+            if($user->isAgent()) {
+                if (!$ticket->unread_agent) {
+                    return e("NO");
+                } else {
+                    return e("YES");
+                }
             }
-            else {
-                return e("YES");
+            else if(!$user->isAgent() && !$user->isAdmin()){
+                if (!$ticket->unread_user) {
+                    return e("NO");
+                } else {
+                    return e("YES");
+                }
             }
         });
 
@@ -158,7 +169,7 @@ class TicketsController extends Controller
     public function index()
     {
         $complete = false;
-        $unread = true;
+        $unread = false;
         return view('ticketit::index', compact('complete', 'unread'));
     }
 
@@ -234,7 +245,6 @@ class TicketsController extends Controller
         $ticket->status_id = Setting::grab('default_status_id');
         $ticket->user_id = auth()->user()->id;
         $ticket->autoSelectAgent();
-
         $ticket->save();
 
         session()->flash('status', trans('ticketit::lang.the-ticket-has-been-created'));
@@ -278,7 +288,10 @@ class TicketsController extends Controller
         //Begin managing unread status when user view a comment
         $isAgent = \Auth::user()->ticketit_agent;
         if (!$isAgent) {
-            $ticket->unread = false;
+            $ticket->unread_user = false;
+        }
+        else{
+            $ticket->unread_agent = false;
         }
         $ticket->save();
         //End managing unread status when user view a comment

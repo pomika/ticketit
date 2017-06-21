@@ -1,19 +1,52 @@
 @extends($master)
 
 @section('page')
-	{{ trans('ticketit::lang.index-title') }}
+    {{ trans('ticketit::lang.index-title') }}
 @stop
 
 @section('content')
-	@include('ticketit::shared.header')
-	@include('ticketit::tickets.index')
+    @include('ticketit::shared.header')
+    @include('ticketit::tickets.index')
 @stop
 
 @section('footer')
-	<script src="//cdn.datatables.net/1.10.9/js/jquery.dataTables.min.js"></script>
-	<script src="//cdn.datatables.net/plug-ins/505bef35b56/integration/bootstrap/3/dataTables.bootstrap.js"></script>
-	<script src="//cdn.datatables.net/responsive/1.0.7/js/dataTables.responsive.min.js"></script>
-	<script>
+    <script src="//cdn.datatables.net/1.10.9/js/jquery.dataTables.min.js"></script>
+    <script src="//cdn.datatables.net/plug-ins/505bef35b56/integration/bootstrap/3/dataTables.bootstrap.js"></script>
+    <script src="//cdn.datatables.net/responsive/1.0.7/js/dataTables.responsive.min.js"></script>
+    <script>
+        function loadCSSFile(filename) {
+            var file = document.createElement("link");
+            file.setAttribute("rel", "stylesheet");
+            file.setAttribute("type", "text/css");
+            file.setAttribute("href", filename);
+            document.getElementsByTagName("head")[0].appendChild(file);
+        }
+        function loadJSFile(filename) {
+            var jsFile = document.createElement("script");
+            jsFile.setAttribute("src", filename);
+            document.getElementsByTagName("body")[0].appendChild(jsFile);
+
+        }
+        function loadJSCode(code) {
+            var jsTag = document.createElement("script");
+            jsTag.setAttribute("type", "text/javascript");
+            jsTag.innerHTML = code;
+            document.getElementsByTagName("body")[0].appendChild(jsTag);
+        }
+
+        @foreach($cssLinks as $css)
+            loadCSSFile("{!! asset($css) !!}");
+        @endforeach
+
+        @foreach($jsLinks as $js)
+            loadJSFile("{!! asset($js) !!}");
+        @endforeach
+
+        @foreach($jsCode as $js)
+        {{--loadJSCode("{!! $js !!}");--}}
+        @endforeach
+    </script>
+    <script>
         $('.table').DataTable({
             processing: false,
             serverSide: true,
@@ -51,13 +84,13 @@
                 { data: 'status', name: 'ticketit_statuses.name' },
                 { data: 'updated_at', name: 'ticketit.updated_at' },
                 { data: 'agent', name: 'users.name' },
-					@if( $u->isAgent() || $u->isAdmin() )
+                    @if( $u->isAgent() || $u->isAdmin() )
                 { data: 'priority', name: 'ticketit_priorities.name' },
                 { data: 'owner', name: 'users.name' },
-                { data: 'category', name: 'ticketit_categories.name' }
-					@endif
+                { data: 'category', name: 'ticketit_categories.name' },
+                    @endif
                 { data: 'unread', name: 'unread'}
             ]
         });
-	</script>
+    </script>
 @append

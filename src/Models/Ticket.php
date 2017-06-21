@@ -51,13 +51,23 @@ class Ticket extends Model
     }
 
     /**
-     * List of unread tickets.
+     * List of unread Agent Tickets.
      *
      * @return Collection
      */
-    public function scopeUnread($query)
+    public function scopeUnreadAgent($query)
     {
-        return $query->where('unread', '=', 'true');
+        return $query->where('unread_agent', '=', 'true');
+    }
+
+    /**
+     * List of unread User Tickets.
+     *
+     * @return Collection
+     */
+    public function scopeUnreadUser($query)
+    {
+        return $query->where('unread_user', '=', 'true');
     }
 
     /**
