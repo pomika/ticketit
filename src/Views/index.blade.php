@@ -14,39 +14,6 @@
     <script src="//cdn.datatables.net/plug-ins/505bef35b56/integration/bootstrap/3/dataTables.bootstrap.js"></script>
     <script src="//cdn.datatables.net/responsive/1.0.7/js/dataTables.responsive.min.js"></script>
     <script>
-        function loadCSSFile(filename) {
-            var file = document.createElement("link");
-            file.setAttribute("rel", "stylesheet");
-            file.setAttribute("type", "text/css");
-            file.setAttribute("href", filename);
-            document.getElementsByTagName("head")[0].appendChild(file);
-        }
-        function loadJSFile(filename) {
-            var jsFile = document.createElement("script");
-            jsFile.setAttribute("src", filename);
-            document.getElementsByTagName("body")[0].appendChild(jsFile);
-
-        }
-        function loadJSCode(code) {
-            var jsTag = document.createElement("script");
-            jsTag.setAttribute("type", "text/javascript");
-            jsTag.innerHTML = code;
-            document.getElementsByTagName("body")[0].appendChild(jsTag);
-        }
-
-        @foreach($cssLinks as $css)
-            loadCSSFile("{!! asset($css) !!}");
-        @endforeach
-
-        @foreach($jsLinks as $js)
-            loadJSFile("{!! asset($js) !!}");
-        @endforeach
-
-        @foreach($jsCode as $js)
-        {{--loadJSCode("{!! $js !!}");--}}
-        @endforeach
-    </script>
-    <script>
         $('.table').DataTable({
             processing: false,
             serverSide: true,
